@@ -14,22 +14,15 @@ csvwriter2.writerow(['Manufacturer', 'ASIN', 'Description'])
 
 
 def scrape(html):
-    # find all div which shows result
     maindiv = html.find_all('div', attrs={"data-component-type": "s-search-result"})
-
-    # Retrieve info for each item
     for i in maindiv:
         head = i.find('h2')
         ProductName = head.find('span').string
         url = head.find('a')['href']
-
-        # Some promotional products dont contain Price value
         try:
             price = i.find('span', attrs={"class": "a-offscreen"}).string.strip('\"')
         except:
             continue
-        # Some products dont contain rating
-        # Wcich requires us to use try and except
         try:
             rating = i.find('span', attrs={"class": "a-icon-alt"}).string.split(' ')
             reviews = i.find('span', attrs={"class": ["a-size-base s-underline-text"]}).string.strip('\"')
@@ -97,7 +90,6 @@ def ProductDetails(Product):
 
 
 def main():
-    # requestheader copied from my browser
     header = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -109,8 +101,8 @@ def main():
 
     # #Scrape 20 webpage search results
     for i in range(1, 21):
-        responses = requests.get(URL + str(i), headers=header, stream=True)  # Append i to go to another search page
-        if responses.status_code == 200:  # check if response is good
+        responses = requests.get(URL + str(i), headers=header, stream=True)  
+        if responses.status_code == 200: 
             html = BeautifulSoup(responses.text, "html.parser")
             scrape(html)  # Scrape through that webpage
 
